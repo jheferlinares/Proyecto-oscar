@@ -74,7 +74,8 @@
                         <th>Tipo</th>
                         <th>Modelo</th>
                         <th>Mantenimiento</th>
-                        <th>Fecha</th>
+                        <th>Inicio</th>
+                        <th>Término</th>
                         <th>Técnico</th>
                         <th>Próximo</th>
                         <th>Estado</th>
@@ -97,7 +98,8 @@
                                     <%= mantenimiento.tipoMantenimiento %>
                                 </span>
                             </td>
-                            <td><%= new Date(mantenimiento.fecha).toLocaleDateString('es-ES') %></td>
+                            <td><%= new Date(mantenimiento.fechaInicio).toLocaleString('es-ES') %></td>
+                            <td><%= new Date(mantenimiento.fechaTermino).toLocaleString('es-ES') %></td>
                             <td><%= mantenimiento.tecnico %></td>
                             <td><%= new Date(mantenimiento.proximoMantenimiento).toLocaleDateString('es-ES') %></td>
                             <td>

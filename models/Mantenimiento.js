@@ -15,17 +15,13 @@ const MantenimientoSchema = new mongoose.Schema({
     required: true,
     enum: ['Preventivo', 'Correctivo', 'Predictivo']
   },
-  fecha: {
+  fechaInicio: {
     type: Date,
     required: true
   },
-  hora: {
-    type: String,
+  fechaTermino: {
+    type: Date,
     required: true
-  },
-  tiempoMantenimiento: {
-    type: Number,
-    required: true // en minutos
   },
   tecnico: {
     type: String,
@@ -54,7 +50,7 @@ const MantenimientoSchema = new mongoose.Schema({
 
 // Middleware para calcular próximo mantenimiento automáticamente
 MantenimientoSchema.pre('save', function(next) {
-  const fechaActual = new Date(this.fecha);
+  const fechaActual = new Date(this.fechaInicio);
   
   // Lógica de mantenimiento según tipo
   switch(this.tipoMantenimiento) {

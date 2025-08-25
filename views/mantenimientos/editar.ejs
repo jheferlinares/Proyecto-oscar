@@ -71,35 +71,25 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="fecha" class="form-label">Fecha</label>
-                                <input type="date" class="form-control" id="fecha" name="fecha" 
-                                       value="<%= new Date(mantenimiento.fecha).toISOString().split('T')[0] %>" required>
+                                <label for="fechaInicio" class="form-label">Fecha y Hora de Inicio</label>
+                                <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" 
+                                       value="<%= new Date(mantenimiento.fechaInicio).toISOString().slice(0, 16) %>" required>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="hora" class="form-label">Hora</label>
-                                <input type="time" class="form-control" id="hora" name="hora" value="<%= mantenimiento.hora %>" required>
+                                <label for="fechaTermino" class="form-label">Fecha y Hora de Término</label>
+                                <input type="datetime-local" class="form-control" id="fechaTermino" name="fechaTermino" 
+                                       value="<%= new Date(mantenimiento.fechaTermino).toISOString().slice(0, 16) %>" required>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="tiempoMantenimiento" class="form-label">Tiempo de Mantenimiento (minutos)</label>
-                                <input type="number" class="form-control" id="tiempoMantenimiento" name="tiempoMantenimiento" 
-                                       value="<%= mantenimiento.tiempoMantenimiento %>" min="1" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="tecnico" class="form-label">Técnico Responsable</label>
-                                <input type="text" class="form-control" id="tecnico" name="tecnico" value="<%= mantenimiento.tecnico %>" required>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="tecnico" class="form-label">Técnico Responsable</label>
+                        <input type="text" class="form-control" id="tecnico" name="tecnico" value="<%= mantenimiento.tecnico %>" required>
                     </div>
 
                     <div class="mb-3">

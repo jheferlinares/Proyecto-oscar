@@ -75,10 +75,7 @@
                                     </span>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><strong>Duración:</strong></td>
-                                <td><%= mantenimiento.tiempoMantenimiento %> minutos</td>
-                            </tr>
+
                         </table>
                     </div>
                 </div>
@@ -88,12 +85,25 @@
                         <h5><i class="fas fa-calendar me-2"></i>Fechas</h5>
                         <table class="table table-borderless">
                             <tr>
-                                <td><strong>Fecha realizado:</strong></td>
-                                <td><%= new Date(mantenimiento.fecha).toLocaleDateString('es-ES') %></td>
+                                <td><strong>Fecha y hora inicio:</strong></td>
+                                <td><%= new Date(mantenimiento.fechaInicio).toLocaleString('es-ES') %></td>
                             </tr>
                             <tr>
-                                <td><strong>Hora:</strong></td>
-                                <td><%= mantenimiento.hora %></td>
+                                <td><strong>Fecha y hora término:</strong></td>
+                                <td><%= new Date(mantenimiento.fechaTermino).toLocaleString('es-ES') %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Duración:</strong></td>
+                                <td>
+                                    <% 
+                                    const inicio = new Date(mantenimiento.fechaInicio);
+                                    const termino = new Date(mantenimiento.fechaTermino);
+                                    const duracionMinutos = Math.round((termino - inicio) / (1000 * 60));
+                                    const horas = Math.floor(duracionMinutos / 60);
+                                    const minutos = duracionMinutos % 60;
+                                    %>
+                                    <%= horas > 0 ? horas + 'h ' : '' %><%= minutos %>min
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>Próximo mantenimiento:</strong></td>
