@@ -22,10 +22,10 @@ router.get('/register', (req, res) => {
 
 // Procesar registro
 router.post('/register', async (req, res) => {
-  const { nombre, email, password, password2 } = req.body;
+  const { nombre, email, posicion, password, password2 } = req.body;
   let errors = [];
 
-  if (!nombre || !email || !password || !password2) {
+  if (!nombre || !email || !posicion || !password || !password2) {
     errors.push({ msg: 'Todos los campos son obligatorios' });
   }
 
@@ -38,18 +38,19 @@ router.post('/register', async (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render('auth/register', { errors, nombre, email });
+    res.render('auth/register', { errors, nombre, email, posicion });
   } else {
     try {
       const existingUser = await User.findOne({ email: email });
       
       if (existingUser) {
         errors.push({ msg: 'El email ya está registrado' });
-        res.render('auth/register', { errors, nombre, email });
+        res.render('auth/register', { errors, nombre, email, posicion });
       } else {
         const newUser = new User({
           nombre,
           email,
+          posicion,
           password
         });
 
@@ -58,7 +59,7 @@ router.post('/register', async (req, res) => {
       }
     } catch (error) {
       console.error(error);
-      res.render('auth/register', { errors: [{ msg: 'Error del servidor' }], nombre, email });
+      res.render('auth/register', { errors: [{ msg: 'Error del servidor' }], nombre, email, posicion });
     }
   }
 });
