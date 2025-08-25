@@ -1,0 +1,208 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+    font-weight: 600;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Estilos para estados de mantenimiento */
+.estado-vencido {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+.estado-proximo {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.estado-aldia {
+    background-color: #d1e7dd;
+    border-left: 4px solid #198754;
+}
+
+/* Animaciones suaves */
+.card, .btn, .form-control, .form-select {
+    transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Estilos para formularios */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Estilos para iconos */
+.fas, .far {
+    margin-right: 0.25rem;
+}
+
+/* Estilos para alertas */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+/* Loader para búsquedas */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Estilos para la tabla de mantenimientos */
+#mantenimientosTable tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    cursor: pointer;
+}
+
+/* Estilos para filtros */
+.filter-container {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Estilos personalizados para formularios de autenticación */
+.auth-login .card-header {
+    background-color: #002a4f !important; /* Azul para login */
+}
+
+.auth-register .card-header {
+    background-color: #198754 !important; /* Verde para register */
+}
+
+.auth-login .btn-primary {
+    background-color: #002a4f;
+    border-color: #002a4f;
+}
+
+.auth-register .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* Fondo de página de autenticación */
+.auth-body {
+    background: linear-gradient(135deg, #c4e5fb 0%, #ffffff 100%);
+    min-height: 100vh;
+}
+
+/* Estilos para el toggle de contraseña */
+.input-group .btn-outline-secondary {
+    border-color: #ced4da;
+}
+
+.input-group .btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+/* Estilos para el título del sistema */
+.navbar-brand {
+    color: #ffffff !important; /* Color del texto - cambia este valor */
+}
+
+.navbar-brand:hover {
+    color: #f8f9fa !important; /* Color al pasar el mouse */
+}
+
+/* Color de fondo de la barra de navegación */
+.navbar.bg-primary {
+    background-color: #002a4f !important; /* Cambia este color */
+}
+
+/* Estilos para el nombre del usuario en la navbar */
+.navbar .nav-link {
+    color: #ffffff !important; /* Color blanco */
+    text-transform: capitalize; /* Primera letra mayúscula */
+}
+
+.navbar .nav-link:hover {
+    color: #f8f9fa !important; /* Color al pasar el mouse */
+}
+
+/* Estilos para el logo de la empresa */
+.company-logo {
+    height: 40px; /* Altura del logo */
+    width: auto; /* Ancho automático */
+    margin-right: 10px; /* Espacio entre logo y texto */
+    border-radius: 4px; /* Bordes redondeados opcionales */
+}
+
+/* Ajuste responsivo para el logo */
+@media (max-width: 768px) {
+    .company-logo {
+        height: 30px;
+        margin-right: 8px;
+    }
+}

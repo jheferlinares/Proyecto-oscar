@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Sistema Mantenimiento PC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="auth-body">
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow auth-register">
+                    <div class="card-header bg-success text-white text-center">
+                        <h4><i class="fas fa-user-plus me-2"></i>Registro de Usuario</h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (typeof errors !== 'undefined') { %>
+                            <% errors.forEach(error => { %>
+                                <div class="alert alert-danger">
+                                    <%= error.msg %>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                        
+                        <form action="/auth/register" method="POST">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre Completo</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" 
+                                       value="<%= typeof nombre !== 'undefined' ? nombre : '' %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="<%= typeof email !== 'undefined' ? email : '' %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="posicion" class="form-label">Posición en la Empresa</label>
+                                <input type="text" class="form-control" id="posicion" name="posicion" 
+                                       value="<%= typeof posicion !== 'undefined' ? posicion : '' %>" 
+                                       placeholder="Ej: Técnico en Sistemas, Administrador de Red, etc." required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">Confirmar Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password2" name="password2" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
+                                        <i class="fas fa-eye" id="eyeIcon2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-user-plus me-2"></i>Registrarse
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <a href="/auth/login" class="text-decoration-none">¿Ya tienes cuenta? Inicia sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle para el campo de contraseña
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+        
+        // Toggle para el campo de confirmar contraseña
+        document.getElementById('togglePassword2').addEventListener('click', function() {
+            const passwordField = document.getElementById('password2');
+            const eyeIcon = document.getElementById('eyeIcon2');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
+</html>
