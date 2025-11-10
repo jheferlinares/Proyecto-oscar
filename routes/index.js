@@ -4,10 +4,10 @@ const { ensureAuthenticated } = require('../middleware/auth');
 
 router.get('/', (req, res) => {
   if (req.isAuthenticated()) {
-    res.redirect('/mantenimientos');
-  } else {
-    res.redirect('/auth/login');
+    return res.redirect('/mantenimientos');
   }
+  // Mostrar landing page si no está autenticado
+  res.render('index');
 });
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => {

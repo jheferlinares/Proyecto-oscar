@@ -21,9 +21,17 @@
                         </div>
                         <h5>¡Oops! Algo salió mal</h5>
                         <p class="lead"><%= message %></p>
-                        <a href="/mantenimientos" class="btn btn-primary">
-                            <i class="fas fa-home me-2"></i>Volver al Inicio
-                        </a>
+                        <% if (typeof user !== 'undefined' && user) { %>
+                            <!-- Si el usuario está autenticado, cerrar sesión y volver al login para evitar bucles de acceso -->
+                            <a href="/auth/logout" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Volver al Inicio
+                            </a>
+                        <% } else { %>
+                            <!-- Si no está autenticado, ir a la raíz (redirige a login) -->
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Volver al Inicio
+                            </a>
+                        <% } %>
                     </div>
                 </div>
             </div>

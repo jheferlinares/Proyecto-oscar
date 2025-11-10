@@ -7,26 +7,25 @@ const passport = require('passport');
 const flash = require('express-flash');
 const methodOverride = require('method-override');
 const path = require('path');
+const multer = require('multer');
 
 const app = express();
 
-// Configuración de la base de datos
-// Opción 1: MongoDB Atlas (recomendado)
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://admin:admin123@cluster0.mongodb.net/mantenimiento_pc?retryWrites=true&w=majority';
+// Configuración de bases de datos duales
+const { connectDatabases } = require('./config/database');
 
-// Opción 2: MongoDB local (descomenta si tienes MongoDB instalado localmente)
-// const MONGODB_URI = 'mongodb://localhost:27017/mantenimiento_pc';
-
-mongoose.connect(MONGODB_URI, {
+// Conectar a Mongoose primero
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  console.log('✅ Conectado a MongoDB');
+  console.log('✅ Mongoose conectado a base principal');
+  // Luego conectar las bases duales
+  return connectDatabases();
+}).then(() => {
+  console.log('✅ Bases de datos duales conectadas');
 }).catch(err => {
-  console.error('❌ Error conectando a MongoDB:', err.message);
-  console.log('\n📋 Opciones para solucionar:');
-  console.log('1. Usar MongoDB Atlas (gratis): https://www.mongodb.com/atlas');
-  console.log('2. Instalar MongoDB localmente: https://www.mongodb.com/try/download/community');
+  console.error('❌ Error conectando bases de datos:', err.message);
   process.exit(1);
 });
 
@@ -39,13 +38,26 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// configurar multer para subir imágenes de modelos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, 'public', 'uploads'));
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const name = file.fieldname + '-' + Date.now() + ext;
+    cb(null, name);
+  }
+});
+const upload = multer({ storage });
+
 // Configuración de sesiones
 app.use(session({
-  secret: 'mantenimiento_secret_key',
+  secret: process.env.SESSION_SECRET || 'mantenimiento_secret_key',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: MONGODB_URI
+    mongoUrl: process.env.MONGODB_URI
   })
 }));
 
@@ -67,6 +79,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 app.use('/mantenimientos', require('./routes/mantenimientos'));
+// rutas para modelos de computadora (subida de imagenes)
+app.use('/modelos', require('./routes/modelos')(upload));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

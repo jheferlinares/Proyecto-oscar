@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/User');
+const SyncModel = require('../models/SyncModel');
 
 // Página de login
 router.get('/login', (req, res) => {
@@ -47,14 +48,13 @@ router.post('/register', async (req, res) => {
         errors.push({ msg: 'El email ya está registrado' });
         res.render('auth/register', { errors, nombre, email, posicion });
       } else {
-        const newUser = new User({
+        // Crear usuario sincronizado en ambas bases
+        await SyncModel.create(User, {
           nombre,
           email,
           posicion,
           password
         });
-
-        await newUser.save();
         res.render('auth/pending', { nombre });
       }
     } catch (error) {

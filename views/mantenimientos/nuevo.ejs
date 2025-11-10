@@ -52,19 +52,27 @@
                                 <label for="tipo" class="form-label">Tipo de Equipo</label>
                                 <select class="form-select" id="tipo" name="tipo" required>
                                     <option value="">Seleccionar...</option>
-                                    <option value="Desktop">Desktop</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Servidor">Servidor</option>
-                                    <option value="All-in-One">All-in-One</option>
+                                    <option value="Desktop" <%= query && query.tipo === 'Desktop' ? 'selected' : '' %>>Desktop</option>
+                                    <option value="Laptop" <%= query && query.tipo === 'Laptop' ? 'selected' : '' %>>Laptop</option>
+                                    <option value="Servidor" <%= query && query.tipo === 'Servidor' ? 'selected' : '' %>>Servidor</option>
+                                    <option value="All-in-One" <%= query && query.tipo === 'All-in-One' ? 'selected' : '' %>>All-in-One</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="modelo" class="form-label">Modelo</label>
-                                <input type="text" class="form-control" id="modelo" name="modelo" required>
-                            </div>
-                        </div>
+                                                <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                                <label for="modelo" class="form-label">Modelo</label>
+                                                                <% if (typeof modelos !== 'undefined' && modelos.length > 0) { %>
+                                                                    <select id="modeloSelect" class="form-select mb-2">
+                                                                        <option value="">-- Elegir modelo existente (opcional) --</option>
+                                                                        <% modelos.forEach(m => { %>
+                                                                            <option value="<%= m.codigo %>|<%= m.nombre %>|<%= m.tipo %>"><%= m.nombre %> (<%= m.codigo %>)</option>
+                                                                        <% }) %>
+                                                                    </select>
+                                                                <% } %>
+                                                                <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Nombre o código del modelo" required value="<%= query && query.modelo ? query.modelo : '' %>">
+                                                        </div>
+                                                </div>
                     </div>
 
                     <div class="row">
@@ -128,6 +136,38 @@
         </div>
     </div>
 </div>
+    <script>
+    // Si el usuario selecciona un modelo existente, rellenar el campo modelo con su nombre o código
+    const modeloSelect = document.getElementById('modeloSelect');
+    if (modeloSelect) {
+        modeloSelect.addEventListener('change', function() {
+            const val = this.value;
+            if (!val) return;
+            // formato: codigo|nombre|tipo
+            const parts = val.split('|');
+            const codigo = parts[0];
+            const nombre = parts[1] || parts[0];
+            const tipo = parts[2] || '';
+            document.getElementById('modelo').value = nombre + ' (' + codigo + ')';
+            if (tipo) {
+                const tipoSelect = document.getElementById('tipo');
+                if (tipoSelect) tipoSelect.value = tipo;
+            }
+        });
+    }
+
+    // Si la plantilla pasó valores por query, tambien rellenar algunos campos al cargar
+    (function prefillFromQuery(){
+        try {
+            const query = <%- JSON.stringify(query || {}) %>;
+            if (query.modelo) document.getElementById('modelo').value = query.modelo;
+            if (query.tipo) {
+                const tipoSelect = document.getElementById('tipo');
+                if (tipoSelect) tipoSelect.value = query.tipo;
+            }
+        } catch(e){ /* no bloquear */ }
+    })();
+    </script>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

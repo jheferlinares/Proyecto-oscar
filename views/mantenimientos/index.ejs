@@ -34,18 +34,26 @@
 
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-list me-2"></i>Mantenimientos Registrados</h2>
-    <% if (user.rol === 'administrador') { %>
-        <a href="/mantenimientos/nuevo" class="btn btn-success">
-            <i class="fas fa-plus me-2"></i>Nuevo Mantenimiento
-        </a>
-    <% } %>
-</div>
-
-<div class="row mb-3">
-    <div class="col-md-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por modelo, técnico...">
+        <h2><i class="fas fa-list me-2"></i>Mantenimientos Registrados</h2>
+        <% if (user.rol === 'administrador' || user.rol === 'moderador') { %>
+            <div class="d-flex gap-2">
+                <a href="/mantenimientos/nuevo" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Nuevo Mantenimiento
+                </a>
+                <a href="/modelos/nuevo" class="btn btn-primary">
+                    <i class="fas fa-desktop me-2"></i>Agregar Modelo
+                </a>
+                <a href="/modelos" class="btn btn-outline-primary">
+                    <i class="fas fa-th-list me-2"></i>Modelos
+                </a>
+            </div>
+        <% } %>
     </div>
+
+    <form id="filtersForm" class="row mb-3" method="GET" action="/mantenimientos">
+        <div class="col-md-3 mb-2">
+            <input type="text" id="searchInput" name="search" class="form-control" placeholder="Buscar por modelo, técnico..." value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
+        </div>
     <div class="col-md-3">
         <select id="filterTipo" class="form-select">
             <option value="">Todos los tipos</option>
@@ -63,6 +71,16 @@
             <option value="Predictivo">Predictivo</option>
         </select>
     </div>
+    <div class="col-md-2">
+        <input type="date" name="startDate" class="form-control" placeholder="Desde" value="<%= typeof query !== 'undefined' && query.startDate ? query.startDate : '' %>">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="endDate" class="form-control" placeholder="Hasta" value="<%= typeof query !== 'undefined' && query.endDate ? query.endDate : '' %>">
+    </div>
+    <div class="col-md-1 d-grid">
+        <button class="btn btn-secondary">Filtrar</button>
+    </div>
+</form>
 </div>
 
 <div class="card">

@@ -1,13 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const Mantenimiento = require('../models/Mantenimiento');
+const SyncModel = require('../models/SyncModel');
+const ModeloComputadora = require('../models/ModeloComputadora');
 const { ensureAuthenticated, ensureAdmin, ensureModeratorOrAdmin } = require('../middleware/auth');
 
 // Listar mantenimientos
-router.get('/', ensureModeratorOrAdmin, async (req, res) => {
+// Listar mantenimientos con filtros y control por rol
+router.get('/', ensureAuthenticated, async (req, res) => {
   try {
-    const mantenimientos = await Mantenimiento.find().populate('creadoPor', 'nombre').sort({ fecha: -1 });
-    res.render('mantenimientos/index', { mantenimientos });
+    const { startDate, endDate, search } = req.query;
+    const query = {};
+
+    // Moderadores solo ven los mantenimientos que ellos crearon
+    if (req.user.rol === 'moderador') {
+      query.creadoPor = req.user._id;
+    }
+
+    // filtro por rango de fechas (fechaInicio)
+    if (startDate || endDate) {
+      query.fechaInicio = {};
+      if (startDate) query.fechaInicio.$gte = new Date(startDate);
+      if (endDate) query.fechaInicio.$lte = new Date(endDate);
+    }
+
+    // búsqueda por texto simple (modelo, técnico)
+    if (search) {
+      query.$or = [{ modelo: new RegExp(search, 'i') }, { tecnico: new RegExp(search, 'i') }];
+    }
+
+  const mantenimientos = await Mantenimiento.find(query).populate('creadoPor', 'nombre').sort({ fechaInicio: -1 });
+  res.render('mantenimientos/index', { mantenimientos, query: req.query });
   } catch (error) {
     console.error(error);
     res.render('error', { message: 'Error al cargar mantenimientos' });
@@ -15,19 +38,25 @@ router.get('/', ensureModeratorOrAdmin, async (req, res) => {
 });
 
 // Formulario nuevo mantenimiento
-router.get('/nuevo', ensureAdmin, (req, res) => {
-  res.render('mantenimientos/nuevo');
+router.get('/nuevo', ensureModeratorOrAdmin, async (req, res) => {
+  try {
+    const modelos = await ModeloComputadora.find().sort({ nombre: 1 });
+    res.render('mantenimientos/nuevo', { modelos, query: req.query });
+  } catch (err) {
+    console.error(err);
+    res.render('mantenimientos/nuevo', { modelos: [], query: req.query });
+  }
 });
 
 // Crear mantenimiento
-router.post('/', ensureAdmin, async (req, res) => {
+router.post('/', ensureModeratorOrAdmin, async (req, res) => {
   try {
-    const nuevoMantenimiento = new Mantenimiento({
+    // Crear mantenimiento sincronizado en ambas bases
+    await SyncModel.create(Mantenimiento, {
       ...req.body,
       creadoPor: req.user._id
     });
     
-    await nuevoMantenimiento.save();
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);
@@ -36,12 +65,16 @@ router.post('/', ensureAdmin, async (req, res) => {
 });
 
 // Ver detalle
-router.get('/:id', ensureModeratorOrAdmin, async (req, res) => {
+router.get('/:id', ensureAuthenticated, async (req, res) => {
   try {
     const mantenimiento = await Mantenimiento.findById(req.params.id).populate('creadoPor', 'nombre');
-    if (!mantenimiento) {
-      return res.render('error', { message: 'Mantenimiento no encontrado' });
+    if (!mantenimiento) return res.render('error', { message: 'Mantenimiento no encontrado' });
+
+    // Si es moderador, sólo puede ver si él lo creó
+    if (req.user.rol === 'moderador' && mantenimiento.creadoPor && mantenimiento.creadoPor._id.toString() !== req.user._id.toString()) {
+      return res.status(403).render('error', { message: 'Acceso denegado - No puedes ver este mantenimiento' });
     }
+
     res.render('mantenimientos/detalle', { mantenimiento });
   } catch (error) {
     console.error(error);
@@ -66,7 +99,8 @@ router.get('/:id/editar', ensureAdmin, async (req, res) => {
 // Actualizar mantenimiento
 router.put('/:id', ensureAdmin, async (req, res) => {
   try {
-    await Mantenimiento.findByIdAndUpdate(req.params.id, req.body);
+    // Actualizar sincronizado en ambas bases
+    await SyncModel.updateOne(Mantenimiento, { _id: req.params.id }, req.body);
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);
