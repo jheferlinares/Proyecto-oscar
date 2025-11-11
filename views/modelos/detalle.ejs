@@ -9,9 +9,12 @@
 <body>
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3><%= modelo.nombre %></h3>
       <div>
-        <small class="text-muted me-3">Código: <strong><%= modelo.codigo %></strong></small>
+        <h3 class="mb-0"><%= modelo.nombre %></h3>
+        <small class="text-muted">Código: <strong><%= modelo.codigo %></strong></small>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <a href="/" class="btn btn-outline-secondary">Inicio</a>
         <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
           <a href="/mantenimientos/nuevo?modelo=<%= encodeURIComponent(modelo.nombre + ' (' + modelo.codigo + ')') %>&tipo=<%= modelo.tipo %>&codigo=<%= encodeURIComponent(modelo.codigo) %>" class="btn btn-sm btn-success me-2">Agregar mantenimiento</a>
         <% } %>

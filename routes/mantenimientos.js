@@ -24,6 +24,14 @@ router.get('/', ensureAuthenticated, async (req, res) => {
       if (endDate) query.fechaInicio.$lte = new Date(endDate);
     }
 
+    // filtro por tipo de equipo y tipo de mantenimiento
+    if (req.query.tipo) {
+      query.tipo = req.query.tipo;
+    }
+    if (req.query.tipoMantenimiento) {
+      query.tipoMantenimiento = req.query.tipoMantenimiento;
+    }
+
     // búsqueda por texto simple (modelo, técnico)
     if (search) {
       query.$or = [{ modelo: new RegExp(search, 'i') }, { tecnico: new RegExp(search, 'i') }];
@@ -51,16 +59,35 @@ router.get('/nuevo', ensureModeratorOrAdmin, async (req, res) => {
 // Crear mantenimiento
 router.post('/', ensureModeratorOrAdmin, async (req, res) => {
   try {
-    // Crear mantenimiento sincronizado en ambas bases
-    await SyncModel.create(Mantenimiento, {
+    // Preparar payload y asegurar que guardamos modeloCodigo
+    const payload = {
       ...req.body,
       creadoPor: req.user._id
-    });
+    };
+
+    // Si el formulario incluye 'codigo' (hidden input), usarlo como modeloCodigo
+    if (req.body.codigo) {
+      payload.modeloCodigo = req.body.codigo;
+    } else if (!payload.modeloCodigo && req.body.modelo) {
+      // intentar extraer código desde el campo modelo si tiene formato "Nombre (COD)"
+      const m = String(req.body.modelo).match(/\(([^)]+)\)\s*$/);
+      if (m && m[1]) payload.modeloCodigo = m[1];
+    }
+
+    // Crear mantenimiento (SyncModel ahora escribe en la DB primaria)
+    await SyncModel.create(Mantenimiento, payload);
     
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);
-    res.render('mantenimientos/nuevo', { error: 'Error al crear mantenimiento', ...req.body });
+    // Al renderizar de nuevo, devolver los modelos para no romper la plantilla
+    try {
+      const modelos = await ModeloComputadora.find().sort({ nombre: 1 });
+      res.render('mantenimientos/nuevo', { error: 'Error al crear mantenimiento', modelos, query: req.body });
+    } catch (e) {
+      console.error(e);
+      res.render('mantenimientos/nuevo', { error: 'Error al crear mantenimiento', modelos: [], query: req.body });
+    }
   }
 });
 

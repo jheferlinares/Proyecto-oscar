@@ -55,33 +55,62 @@
             <input type="text" id="searchInput" name="search" class="form-control" placeholder="Buscar por modelo, técnico..." value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
         </div>
     <div class="col-md-3">
-        <select id="filterTipo" class="form-select">
+        <select id="filterTipo" name="tipo" class="form-select">
             <option value="">Todos los tipos</option>
-            <option value="Desktop">Desktop</option>
-            <option value="Laptop">Laptop</option>
-            <option value="Servidor">Servidor</option>
-            <option value="All-in-One">All-in-One</option>
+            <option value="Desktop" <%= typeof query !== 'undefined' && query.tipo === 'Desktop' ? 'selected' : '' %>>Desktop</option>
+            <option value="Laptop" <%= typeof query !== 'undefined' && query.tipo === 'Laptop' ? 'selected' : '' %>>Laptop</option>
+            <option value="Servidor" <%= typeof query !== 'undefined' && query.tipo === 'Servidor' ? 'selected' : '' %>>Servidor</option>
+            <option value="All-in-One" <%= typeof query !== 'undefined' && query.tipo === 'All-in-One' ? 'selected' : '' %>>All-in-One</option>
         </select>
     </div>
     <div class="col-md-3">
-        <select id="filterMantenimiento" class="form-select">
+        <select id="filterMantenimiento" name="tipoMantenimiento" class="form-select">
             <option value="">Todos los mantenimientos</option>
-            <option value="Preventivo">Preventivo</option>
-            <option value="Correctivo">Correctivo</option>
-            <option value="Predictivo">Predictivo</option>
+            <option value="Preventivo" <%= typeof query !== 'undefined' && query.tipoMantenimiento === 'Preventivo' ? 'selected' : '' %>>Preventivo</option>
+            <option value="Correctivo" <%= typeof query !== 'undefined' && query.tipoMantenimiento === 'Correctivo' ? 'selected' : '' %>>Correctivo</option>
+            <option value="Predictivo" <%= typeof query !== 'undefined' && query.tipoMantenimiento === 'Predictivo' ? 'selected' : '' %>>Predictivo</option>
         </select>
     </div>
     <div class="col-md-2">
-        <input type="date" name="startDate" class="form-control" placeholder="Desde" value="<%= typeof query !== 'undefined' && query.startDate ? query.startDate : '' %>">
+        <input id="startDate" type="date" name="startDate" class="form-control" placeholder="Desde" value="<%= typeof query !== 'undefined' && query.startDate ? query.startDate : '' %>">
     </div>
     <div class="col-md-2">
-        <input type="date" name="endDate" class="form-control" placeholder="Hasta" value="<%= typeof query !== 'undefined' && query.endDate ? query.endDate : '' %>">
-    </div>
-    <div class="col-md-1 d-grid">
-        <button class="btn btn-secondary">Filtrar</button>
+        <input id="endDate" type="date" name="endDate" class="form-control" placeholder="Hasta" value="<%= typeof query !== 'undefined' && query.endDate ? query.endDate : '' %>">
     </div>
 </form>
 </div>
+
+<script>
+    // Auto-submit filters when inputs change. Search is debounced.
+    (function(){
+        const form = document.getElementById('filtersForm');
+        if (!form) return;
+
+        const submit = () => form.submit();
+
+        // debounce helper
+        let timer = null;
+        const debounceSubmit = (delay = 350) => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => submit(), delay);
+        };
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.addEventListener('input', () => debounceSubmit(400));
+
+        const tipoSelect = document.getElementById('filterTipo');
+        if (tipoSelect) tipoSelect.addEventListener('change', submit);
+
+        const tipoMantenimiento = document.getElementById('filterMantenimiento');
+        if (tipoMantenimiento) tipoMantenimiento.addEventListener('change', submit);
+
+        const startDate = document.getElementById('startDate');
+        if (startDate) startDate.addEventListener('change', submit);
+
+        const endDate = document.getElementById('endDate');
+        if (endDate) endDate.addEventListener('change', submit);
+    })();
+</script>
 
 <div class="card">
     <div class="card-body">

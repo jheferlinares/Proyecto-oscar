@@ -46,6 +46,7 @@
                 <% } %>
 
                 <form action="/mantenimientos" method="POST">
+                    <input type="hidden" id="codigo" name="codigo" value="<%= query && query.codigo ? query.codigo : '' %>">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -153,6 +154,9 @@
                 const tipoSelect = document.getElementById('tipo');
                 if (tipoSelect) tipoSelect.value = tipo;
             }
+            // set codigo hidden input
+            const codigoInput = document.getElementById('codigo');
+            if (codigoInput) codigoInput.value = codigo;
         });
     }
 
@@ -164,6 +168,10 @@
             if (query.tipo) {
                 const tipoSelect = document.getElementById('tipo');
                 if (tipoSelect) tipoSelect.value = query.tipo;
+            }
+            if (query.codigo) {
+                const codigoInput = document.getElementById('codigo');
+                if (codigoInput) codigoInput.value = query.codigo;
             }
         } catch(e){ /* no bloquear */ }
     })();

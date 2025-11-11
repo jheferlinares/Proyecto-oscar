@@ -10,10 +10,16 @@
 <body>
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3>Modelos de Computadora</h3>
-      <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
-        <a href="/modelos/nuevo" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agregar Modelo</a>
-      <% } %>
+      <div>
+        <h3 class="mb-0">Modelos de Computadora</h3>
+        <small class="text-muted">Listado de modelos</small>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <a href="/" class="btn btn-outline-secondary">Inicio</a>
+        <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
+          <a href="/modelos/nuevo" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agregar Modelo</a>
+        <% } %>
+      </div>
     </div>
 
     <!-- DEBUG: mostrar usuario en la vista para comprobar rol (temporal) -->

@@ -10,6 +10,9 @@ const MantenimientoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  modeloCodigo: {
+    type: String
+  },
   tipoMantenimiento: {
     type: String,
     required: true,

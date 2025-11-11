@@ -48,8 +48,16 @@ module.exports = function(upload) {
       const modelo = await ModeloComputadora.findById(req.params.id);
       if (!modelo) return res.render('error', { message: 'Modelo no encontrado' });
 
-      // Buscar mantenimientos relacionados por nombre o código (compatibilidad con datos previos)
-      const mantenimientos = await Mantenimiento.find({ $or: [{ modelo: modelo.nombre }, { modelo: modelo.codigo }] }).sort({ fechaInicio: -1 }).populate('creadoPor', 'nombre');
+      // Buscar mantenimientos relacionados por nombre, código o modeloCodigo.
+      // Usamos también una búsqueda flexible por código dentro del campo 'modelo' para compatibilidad con registros antiguos.
+      const mantenimientos = await Mantenimiento.find({
+        $or: [
+          { modelo: modelo.nombre },
+          { modelo: modelo.codigo },
+          { modeloCodigo: modelo.codigo },
+          { modelo: new RegExp(modelo.codigo, 'i') }
+        ]
+      }).sort({ fechaInicio: -1 }).populate('creadoPor', 'nombre');
 
       res.render('modelos/detalle', { modelo, mantenimientos });
     } catch (err) {
