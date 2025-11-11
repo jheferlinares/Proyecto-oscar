@@ -39,9 +39,21 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // configurar multer para subir imágenes de modelos
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+// Asegurarse de que la carpeta exista en tiempo de ejecución (por si el despliegue no la crea)
+const fs = require('fs');
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Carpeta de uploads creada:', uploadsDir);
+  }
+} catch (e) {
+  console.error('❌ No se pudo crear la carpeta de uploads:', e.message);
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'public', 'uploads'));
+    cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
@@ -49,7 +61,18 @@ const storage = multer.diskStorage({
     cb(null, name);
   }
 });
-const upload = multer({ storage });
+
+// Limitar tamaño y tipos para evitar errores y abusos
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: function (req, file, cb) {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE', 'imagen'));
+    }
+    cb(null, true);
+  }
+});
 
 // Configuración de sesiones
 app.use(session({
@@ -81,6 +104,23 @@ app.use('/auth', require('./routes/auth'));
 app.use('/mantenimientos', require('./routes/mantenimientos'));
 // rutas para modelos de computadora (subida de imagenes)
 app.use('/modelos', require('./routes/modelos')(upload));
+
+// Middleware global para capturar errores de multer y mostrar un mensaje amigable
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    console.error('Multer error:', err);
+    // Si venimos de la creación de un modelo, renderizar la vista de nuevo modelo con el error
+    if (req.originalUrl && req.originalUrl.startsWith('/modelos')) {
+      return res.status(400).render('modelos/nuevo', { error: err.message || 'Error al subir imagen', data: req.body });
+    }
+    // Si venimos del formulario de mantenimiento, renderizar la vista correspondiente
+    if (req.originalUrl && req.originalUrl.startsWith('/mantenimientos')) {
+      return res.status(400).render('mantenimientos/nuevo', { error: err.message || 'Error al subir imagen', ...req.body });
+    }
+    return res.status(400).render('error', { message: err.message || 'Error de subida de archivo' });
+  }
+  next(err);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
