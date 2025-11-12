@@ -17,14 +17,13 @@ module.exports = function(upload) {
     }
   });
 
-  // Formulario nuevo modelo
-  router.get('/nuevo', ensureModeratorOrAdmin, (req, res) => {
-    // pasar 'data' vacío para evitar errores en la plantilla cuando no hay valores previos
+  // Formulario nuevo modelo (solo administradores)
+  router.get('/nuevo', ensureAdmin, (req, res) => {
     res.render('modelos/nuevo', { data: {} });
   });
 
-  // Crear modelo (con subida de imagen)
-  router.post('/', ensureModeratorOrAdmin, upload.single('imagen'), async (req, res) => {
+  // Crear modelo
+  router.post('/', ensureAdmin, upload.single('imagen'), async (req, res) => {
     try {
       const payload = {
         nombre: req.body.nombre,
@@ -49,7 +48,6 @@ module.exports = function(upload) {
       if (!modelo) return res.render('error', { message: 'Modelo no encontrado' });
 
       // Buscar mantenimientos relacionados por nombre, código o modeloCodigo.
-      // Usamos también una búsqueda flexible por código dentro del campo 'modelo' para compatibilidad con registros antiguos.
       const mantenimientos = await Mantenimiento.find({
         $or: [
           { modelo: modelo.nombre },

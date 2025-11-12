@@ -51,11 +51,9 @@ const MantenimientoSchema = new mongoose.Schema({
   }
 });
 
-// Middleware para calcular próximo mantenimiento automáticamente
 MantenimientoSchema.pre('save', function(next) {
   const fechaActual = new Date(this.fechaInicio);
   
-  // Lógica de mantenimiento según tipo
   switch(this.tipoMantenimiento) {
     case 'Preventivo':
       fechaActual.setMonth(fechaActual.getMonth() + 3); // cada 3 meses

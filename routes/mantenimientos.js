@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Mantenimiento = require('../models/Mantenimiento');
-const SyncModel = require('../models/SyncModel');
 const ModeloComputadora = require('../models/ModeloComputadora');
 const { ensureAuthenticated, ensureAdmin, ensureModeratorOrAdmin } = require('../middleware/auth');
 
-// Listar mantenimientos
 // Listar mantenimientos con filtros y control por rol
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {
@@ -45,6 +43,63 @@ router.get('/', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Estadísticas mensuales por tipo de equipo
+router.get('/estadisticas/mensuales', ensureAdmin, async (req, res) => {
+  try {
+    const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+    // Rango de fechas para el año seleccionado
+    const start = new Date(`${year}-01-01T00:00:00.000Z`);
+    const end = new Date(`${year + 1}-01-01T00:00:00.000Z`);
+
+    // Agregación: contar mantenimientos por mes y tipo
+    const agg = await Mantenimiento.aggregate([
+      { $match: { fechaInicio: { $gte: start, $lt: end } } },
+      { $group: { _id: { month: { $month: '$fechaInicio' }, tipo: '$tipo' }, count: { $sum: 1 } } }
+    ]);
+
+    // Tipos conocidos — mantener orden estable
+    const tipos = ['Desktop', 'Laptop', 'Servidor', 'All-in-One'];
+    const labels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    // Inicializar conteos
+    const dataByTipo = {};
+    tipos.forEach(t => dataByTipo[t] = new Array(12).fill(0));
+
+    // Rellenar con resultados de agregación
+    agg.forEach(item => {
+      const monthIndex = item._id.month - 1; // Mongo month: 1-12
+      const tipo = item._id.tipo || 'Otros';
+      if (!dataByTipo[tipo]) dataByTipo[tipo] = new Array(12).fill(0);
+      dataByTipo[tipo][monthIndex] = item.count;
+    });
+
+    // Preparar datasets para Chart.js
+    const colors = {
+      'Desktop': 'rgba(54,162,235,0.7)',
+      'Laptop': 'rgba(255,206,86,0.7)',
+      'Servidor': 'rgba(255,99,132,0.7)',
+      'All-in-One': 'rgba(75,192,192,0.7)',
+      'Otros': 'rgba(153,102,255,0.7)'
+    };
+
+    const datasets = Object.keys(dataByTipo).map(tipo => ({
+      label: tipo,
+      data: dataByTipo[tipo],
+      backgroundColor: colors[tipo] || colors['Otros']
+    }));
+
+    res.render('estadisticas/mensuales', {
+      year,
+      labels: JSON.stringify(labels),
+      datasets: JSON.stringify(datasets)
+    });
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al generar estadísticas' });
+  }
+});
+
 // Formulario nuevo mantenimiento
 router.get('/nuevo', ensureModeratorOrAdmin, async (req, res) => {
   try {
@@ -74,8 +129,8 @@ router.post('/', ensureModeratorOrAdmin, async (req, res) => {
       if (m && m[1]) payload.modeloCodigo = m[1];
     }
 
-    // Crear mantenimiento (SyncModel ahora escribe en la DB primaria)
-    await SyncModel.create(Mantenimiento, payload);
+  // Crear mantenimiento directamente en la base primaria
+  await Mantenimiento.create(payload);
     
     res.redirect('/mantenimientos');
   } catch (error) {
@@ -126,8 +181,8 @@ router.get('/:id/editar', ensureAdmin, async (req, res) => {
 // Actualizar mantenimiento
 router.put('/:id', ensureAdmin, async (req, res) => {
   try {
-    // Actualizar sincronizado en ambas bases
-    await SyncModel.updateOne(Mantenimiento, { _id: req.params.id }, req.body);
+  // Actualizar en la base primaria
+  await Mantenimiento.updateOne({ _id: req.params.id }, req.body);
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);

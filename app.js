@@ -38,9 +38,7 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// configurar multer para subir imágenes de modelos
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
-// Asegurarse de que la carpeta exista en tiempo de ejecución (por si el despliegue no la crea)
 const fs = require('fs');
 try {
   if (!fs.existsSync(uploadsDir)) {
@@ -62,7 +60,6 @@ const storage = multer.diskStorage({
   }
 });
 
-// Limitar tamaño y tipos para evitar errores y abusos
 const upload = multer({ 
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
@@ -109,11 +106,9 @@ app.use('/modelos', require('./routes/modelos')(upload));
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     console.error('Multer error:', err);
-    // Si venimos de la creación de un modelo, renderizar la vista de nuevo modelo con el error
     if (req.originalUrl && req.originalUrl.startsWith('/modelos')) {
       return res.status(400).render('modelos/nuevo', { error: err.message || 'Error al subir imagen', data: req.body });
     }
-    // Si venimos del formulario de mantenimiento, renderizar la vista correspondiente
     if (req.originalUrl && req.originalUrl.startsWith('/mantenimientos')) {
       return res.status(400).render('mantenimientos/nuevo', { error: err.message || 'Error al subir imagen', ...req.body });
     }

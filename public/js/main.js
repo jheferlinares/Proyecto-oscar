@@ -1,4 +1,3 @@
-// JavaScript para funcionalidades del sistema de mantenimiento
 
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar funcionalidades

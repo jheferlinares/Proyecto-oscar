@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modelos - Sistema Mantenimiento PC</title>
+  <title>Modelos - EANSA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -16,18 +16,17 @@
       </div>
       <div class="d-flex gap-2 align-items-center">
         <a href="/" class="btn btn-outline-secondary">Inicio</a>
-        <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
+        <% if (user && user.rol === 'administrador') { %>
           <a href="/modelos/nuevo" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agregar Modelo</a>
         <% } %>
       </div>
     </div>
 
-    <!-- DEBUG: mostrar usuario en la vista para comprobar rol (temporal) -->
     <div class="mb-3">
       <% if (typeof user !== 'undefined' && user) { %>
-        <small class="text-muted">DEBUG - usuario: <strong><%= user.nombre %></strong> | rol: <strong><%= user.rol %></strong></small>
+        <small class="text-muted">Usuario: <strong><%= user.nombre %></strong> | rol: <strong><%= user.rol %></strong></small>
       <% } else { %>
-        <small class="text-danger">DEBUG - No hay usuario en la vista (no autenticado)</small>
+        <small class="text-danger">No hay usuario en la vista (no autenticado)</small>
       <% } %>
     </div>
 

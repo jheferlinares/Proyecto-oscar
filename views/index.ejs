@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido - Sistema Mantenimiento PC</title>
+    <title>Bienvenido - EANSA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <style>
-        /* Hero background - la imagen la puedes reemplazar en /public/images/hero.jpg */
         body.home-hero {
             background-image: url('/images/hero.jpg');
             background-size: cover;
@@ -18,7 +17,6 @@
             position: relative;
             color: white;
         }
-        /* Overlay para hacer la imagen un poco opaca; ajusta el alpha según prefieras */
         .hero-overlay {
             position: absolute;
             inset: 0;
@@ -30,9 +28,8 @@
             position: relative;
             z-index: 2;
         }
-        /* Caja transparente alrededor del CTA central */
         .cta-box {
-            background: rgba(0,0,0,0.40); /* ligero color negro */
+            background: rgba(0,0,0,0.40); 
             padding: 2.2rem 2.5rem;
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.45);
@@ -41,7 +38,6 @@
             position: relative;
             z-index: 3;
         }
-    /* Mover el bloque del logo más hacia la izquierda */
     .logo-container { margin-left: -40px; }
     @media (max-width: 576px) { .logo-container { margin-left: 0; } }
         .logo-placeholder {
@@ -54,7 +50,6 @@
             .header-top { flex-direction: column; gap: .5rem; }
             .social-and-buttons { text-align: center; }
         }
-        /* Footer actions positioned near bottom */
         .footer-actions {
             position: absolute;
             left: 0;
@@ -70,16 +65,14 @@
 
     <header class="container py-3 hero-content">
         <div class="d-flex header-top justify-content-between align-items-center">
-            <!-- Left: logo + company name -->
             <div class="d-flex align-items-center logo-container">
                 <img src="/images/logo.png" alt="Logo" class="logo-placeholder me-3" />
                 <div>
                     <h4 class="mb-0">Nombre Empresa</h4>
-                    <small class="text-white-50">Sistema de mantenimiento</small>
+                    <small class="text-white-50">EANSA - Sistema de mantenimiento</small>
                 </div>
             </div>
 
-            <!-- Right: social icons -->
             <div class="text-end social-and-buttons">
                 <div class="mb-2 social-icons">
                     <a href="#" class="me-2" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
@@ -94,7 +87,7 @@
         <div class="row justify-content-center align-items-center" style="min-height:65vh;">
             <div class="col-md-8 col-lg-6 text-center">
                 <div class="cta-box mx-auto">
-                    <h1 class="display-4 fw-bold">Sistema de mantenimiento</h1>
+                    <h1 class="display-4 fw-bold">EANSA - Sistema de mantenimiento</h1>
                     <p class="lead mb-4">Mantén tus equipos en óptimas condiciones. Reporta incidencias, programa mantenimientos y controla historiales desde una sola plataforma.</p>
 
                     <p class="mb-4">Empieza ahora: crea una cuenta o inicia sesión para acceder al panel.</p>
@@ -112,7 +105,6 @@
         </div>
     </main>
 
-    <!-- Footer actions (lower on the page) -->
     <div class="footer-actions hero-content">
         <div class="container">
             <div class="row">
