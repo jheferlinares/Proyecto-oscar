@@ -165,12 +165,18 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 });
 
 // Formulario editar
-router.get('/:id/editar', ensureAdmin, async (req, res) => {
+router.get('/:id/editar', ensureModeratorOrAdmin, async (req, res) => {
   try {
     const mantenimiento = await Mantenimiento.findById(req.params.id);
     if (!mantenimiento) {
       return res.render('error', { message: 'Mantenimiento no encontrado' });
     }
+    
+    // Si es moderador, solo puede editar si él lo creó
+    if (req.user.rol === 'moderador' && mantenimiento.creadoPor.toString() !== req.user._id.toString()) {
+      return res.status(403).render('error', { message: 'Solo puedes editar tus propios mantenimientos' });
+    }
+    
     res.render('mantenimientos/editar', { mantenimiento });
   } catch (error) {
     console.error(error);
@@ -179,14 +185,35 @@ router.get('/:id/editar', ensureAdmin, async (req, res) => {
 });
 
 // Actualizar mantenimiento
-router.put('/:id', ensureAdmin, async (req, res) => {
+router.put('/:id', ensureModeratorOrAdmin, async (req, res) => {
   try {
-  // Actualizar en la base primaria
-  await Mantenimiento.updateOne({ _id: req.params.id }, req.body);
+    const mantenimiento = await Mantenimiento.findById(req.params.id);
+    if (!mantenimiento) {
+      return res.render('error', { message: 'Mantenimiento no encontrado' });
+    }
+    
+    // Si es moderador, solo puede actualizar si él lo creó
+    if (req.user.rol === 'moderador' && mantenimiento.creadoPor.toString() !== req.user._id.toString()) {
+      return res.status(403).render('error', { message: 'Solo puedes editar tus propios mantenimientos' });
+    }
+    
+    // Actualizar en la base primaria
+    await Mantenimiento.updateOne({ _id: req.params.id }, req.body);
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);
     res.render('error', { message: 'Error al actualizar mantenimiento' });
+  }
+});
+
+// Eliminar mantenimiento
+router.delete('/:id', ensureAdmin, async (req, res) => {
+  try {
+    await Mantenimiento.deleteOne({ _id: req.params.id });
+    res.redirect('/mantenimientos');
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al eliminar mantenimiento' });
   }
 });
 

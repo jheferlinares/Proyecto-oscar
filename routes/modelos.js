@@ -64,5 +64,16 @@ module.exports = function(upload) {
     }
   });
 
+  // Eliminar modelo
+  router.delete('/:id', ensureAdmin, async (req, res) => {
+    try {
+      await ModeloComputadora.deleteOne({ _id: req.params.id });
+      res.redirect('/modelos');
+    } catch (error) {
+      console.error(error);
+      res.render('error', { message: 'Error al eliminar modelo' });
+    }
+  });
+
   return router;
 };

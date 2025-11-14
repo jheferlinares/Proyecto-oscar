@@ -40,10 +40,17 @@
             <div class="card-body">
               <h5 class="card-title"><%= m.nombre %></h5>
               <p class="card-text">Código: <strong><%= m.codigo %></strong></p>
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 flex-wrap">
                 <a href="/modelos/<%= m._id %>" class="btn btn-sm btn-outline-primary">Ver historial</a>
                 <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
                   <a href="/mantenimientos/nuevo?modelo=<%= encodeURIComponent(m.nombre + ' (' + m.codigo + ')') %>&tipo=<%= m.tipo %>&codigo=<%= encodeURIComponent(m.codigo) %>" class="btn btn-sm btn-outline-success">Agregar mantenimiento</a>
+                <% } %>
+                <% if (user && user.rol === 'administrador') { %>
+                  <form method="POST" action="/modelos/<%= m._id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este modelo?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
                 <% } %>
               </div>
             </div>
