@@ -11,21 +11,14 @@ const multer = require('multer');
 
 const app = express();
 
-// Configuración de bases de datos duales
-const { connectDatabases } = require('./config/database');
-
-// Conectar a Mongoose primero
+// Configuración de la base de datos
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  console.log('✅ Mongoose conectado a base principal');
-  // Luego conectar las bases duales
-  return connectDatabases();
-}).then(() => {
-  console.log('✅ Bases de datos duales conectadas');
+  console.log('✅ Conectado a MongoDB');
 }).catch(err => {
-  console.error('❌ Error conectando bases de datos:', err.message);
+  console.error('❌ Error conectando a MongoDB:', err.message);
   process.exit(1);
 });
 
