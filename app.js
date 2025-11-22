@@ -95,7 +95,7 @@ app.use('/mantenimientos', require('./routes/mantenimientos'));
 // rutas para modelos de computadora (subida de imagenes)
 app.use('/modelos', require('./routes/modelos')(upload));
 
-// Middleware global para capturar errores de multer y mostrar un mensaje amigable
+// Middleware global para capturar errores de multer
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     console.error('Multer error:', err);
