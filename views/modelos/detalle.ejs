@@ -22,9 +22,36 @@
       </div>
     </div>
 
-    <% if (modelo.imagen) { %>
-      <div class="mb-3"><img src="<%= modelo.imagen %>" style="max-width:320px; width:100%; height:auto; object-fit:cover;" /></div>
-    <% } %>
+    <div class="row mb-4">
+      <% if (modelo.imagen) { %>
+        <div class="col-md-4">
+          <img src="<%= modelo.imagen %>" class="img-fluid rounded" style="max-width:320px; width:100%; height:auto; object-fit:cover;" />
+        </div>
+        <div class="col-md-8">
+      <% } else { %>
+        <div class="col-12">
+      <% } %>
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Especificaciones Técnicas</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <p><strong>Tipo:</strong> <%= modelo.tipo %></p>
+                  <% if (modelo.procesador) { %><p><strong>Procesador:</strong> <%= modelo.procesador %></p><% } %>
+                  <% if (modelo.tipoRam) { %><p><strong>Tipo de RAM:</strong> <%= modelo.tipoRam %></p><% } %>
+                </div>
+                <div class="col-sm-6">
+                  <% if (modelo.memoriaRam) { %><p><strong>Memoria RAM:</strong> <%= modelo.memoriaRam %></p><% } %>
+                  <% if (modelo.discoDuro) { %><p><strong>Disco Duro:</strong> <%= modelo.discoDuro %></p><% } %>
+                  <% if (modelo.tarjetaGrafica) { %><p><strong>Tarjeta Gráfica:</strong> <%= modelo.tarjetaGrafica %></p><% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
 
     <h5>Historial de mantenimientos</h5>
     <% if (mantenimientos.length === 0) { %>

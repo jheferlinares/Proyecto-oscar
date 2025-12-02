@@ -36,7 +36,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     }
 
   const mantenimientos = await Mantenimiento.find(query).populate('creadoPor', 'nombre').sort({ fechaInicio: -1 });
-  res.render('mantenimientos/index', { mantenimientos, query: req.query });
+  res.render('mantenimientos/index', { mantenimientos, query: req.query, messages: req.flash() });
   } catch (error) {
     console.error(error);
     res.render('error', { message: 'Error al cargar mantenimientos' });
@@ -132,6 +132,7 @@ router.post('/', ensureModeratorOrAdmin, async (req, res) => {
   // Crear mantenimiento directamente en la base primaria
   await Mantenimiento.create(payload);
     
+    req.flash('success', 'Mantenimiento creado exitosamente');
     res.redirect('/mantenimientos');
   } catch (error) {
     console.error(error);
@@ -214,6 +215,80 @@ router.delete('/:id', ensureAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.render('error', { message: 'Error al eliminar mantenimiento' });
+  }
+});
+
+// Formulario de admisión
+router.get('/:id/admision', ensureModeratorOrAdmin, async (req, res) => {
+  try {
+    const mantenimiento = await Mantenimiento.findById(req.params.id);
+    if (!mantenimiento) {
+      return res.render('error', { message: 'Mantenimiento no encontrado' });
+    }
+    res.render('mantenimientos/admision', { mantenimiento });
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al cargar formulario de admisión' });
+  }
+});
+
+// Procesar admisión
+router.post('/:id/admision', ensureModeratorOrAdmin, async (req, res) => {
+  try {
+    const { nombreCliente, firmaData } = req.body;
+    await Mantenimiento.updateOne(
+      { _id: req.params.id },
+      {
+        nombreClienteAdmision: nombreCliente,
+        firmaAdmision: firmaData,
+        fechaAdmision: new Date(),
+        estadoServicio: 'en_proceso'
+      }
+    );
+    req.flash('success', 'Admisión registrada correctamente');
+    res.redirect(`/mantenimientos/${req.params.id}`);
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al procesar admisión' });
+  }
+});
+
+// Formulario de entrega
+router.get('/:id/entrega', ensureModeratorOrAdmin, async (req, res) => {
+  try {
+    const mantenimiento = await Mantenimiento.findById(req.params.id);
+    if (!mantenimiento) {
+      return res.render('error', { message: 'Mantenimiento no encontrado' });
+    }
+    if (!mantenimiento.firmaAdmision) {
+      req.flash('error', 'Debe completar la admisión antes de la entrega');
+      return res.redirect(`/mantenimientos/${req.params.id}`);
+    }
+    res.render('mantenimientos/entrega', { mantenimiento });
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al cargar formulario de entrega' });
+  }
+});
+
+// Procesar entrega
+router.post('/:id/entrega', ensureModeratorOrAdmin, async (req, res) => {
+  try {
+    const { nombreCliente, firmaData } = req.body;
+    await Mantenimiento.updateOne(
+      { _id: req.params.id },
+      {
+        nombreClienteEntrega: nombreCliente,
+        firmaEntrega: firmaData,
+        fechaEntrega: new Date(),
+        estadoServicio: 'entregado'
+      }
+    );
+    req.flash('success', 'Entrega registrada correctamente');
+    res.redirect(`/mantenimientos/${req.params.id}`);
+  } catch (error) {
+    console.error(error);
+    res.render('error', { message: 'Error al procesar entrega' });
   }
 });
 

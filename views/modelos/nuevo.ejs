@@ -20,8 +20,49 @@
       </div>
       <div class="mb-3">
         <label class="form-label">Código único de almacén</label>
-        <input type="text" name="codigo" class="form-control" required value="<%= data && data.codigo ? data.codigo : '' %>">
+        <input type="text" name="codigo" class="form-control" placeholder="Ej: PC-001, LT-002" required value="<%= data && data.codigo ? data.codigo : '' %>">
       </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Procesador</label>
+            <input type="text" name="procesador" class="form-control" placeholder="Ej: Intel Core i5-12400, AMD Ryzen 5 5600X" value="<%= data && data.procesador ? data.procesador : '' %>">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Tipo de RAM</label>
+            <select name="tipoRam" class="form-select">
+              <option value="">Seleccionar...</option>
+              <option value="DDR3" <%= data && data.tipoRam === 'DDR3' ? 'selected' : '' %>>DDR3</option>
+              <option value="DDR4" <%= data && data.tipoRam === 'DDR4' ? 'selected' : '' %>>DDR4</option>
+              <option value="DDR5" <%= data && data.tipoRam === 'DDR5' ? 'selected' : '' %>>DDR5</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Memoria RAM</label>
+            <input type="text" name="memoriaRam" class="form-control" placeholder="Ej: 8GB, 16GB, 32GB" value="<%= data && data.memoriaRam ? data.memoriaRam : '' %>">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Disco Duro</label>
+            <input type="text" name="discoDuro" class="form-control" placeholder="Ej: SSD 256GB, HDD 1TB, SSD 512GB + HDD 1TB" value="<%= data && data.discoDuro ? data.discoDuro : '' %>">
+          </div>
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Tarjeta Gráfica</label>
+        <input type="text" name="tarjetaGrafica" class="form-control" placeholder="Ej: Integrada Intel UHD, NVIDIA GTX 1650, AMD Radeon RX 6600" value="<%= data && data.tarjetaGrafica ? data.tarjetaGrafica : '' %>">
+      </div>
+      
       <div class="mb-3">
         <label class="form-label">Imagen del modelo (opcional)</label>
         <input type="file" name="imagen" accept="image/*" class="form-control">

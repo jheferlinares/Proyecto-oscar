@@ -159,6 +159,77 @@
                     </div>
                 </div>
 
+                <!-- Estado del Servicio -->
+                <div class="mb-4">
+                    <h5><i class="fas fa-clipboard-check me-2"></i>Estado del Servicio</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="badge bg-<%= mantenimiento.estadoServicio === 'pendiente' ? 'secondary' : 
+                                                     mantenimiento.estadoServicio === 'en_proceso' ? 'warning' : 
+                                                     mantenimiento.estadoServicio === 'completado' ? 'info' : 'success' %> fs-6">
+                                <%= mantenimiento.estadoServicio === 'pendiente' ? 'Pendiente' : 
+                                    mantenimiento.estadoServicio === 'en_proceso' ? 'En Proceso' : 
+                                    mantenimiento.estadoServicio === 'completado' ? 'Completado' : 'Entregado' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Firmas Digitales -->
+                <% if (mantenimiento.firmaAdmision || mantenimiento.firmaEntrega) { %>
+                <div class="mb-4">
+                    <h5><i class="fas fa-signature me-2"></i>Firmas Digitales</h5>
+                    <div class="row">
+                        <% if (mantenimiento.firmaAdmision) { %>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Admisión</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Cliente:</strong> <%= mantenimiento.nombreClienteAdmision %></p>
+                                    <p><strong>Fecha:</strong> <%= new Date(mantenimiento.fechaAdmision).toLocaleString('es-ES') %></p>
+                                    <img src="<%= mantenimiento.firmaAdmision %>" class="img-fluid border" style="max-height: 150px;">
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                        
+                        <% if (mantenimiento.firmaEntrega) { %>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-handshake me-2"></i>Entrega</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Cliente:</strong> <%= mantenimiento.nombreClienteEntrega %></p>
+                                    <p><strong>Fecha:</strong> <%= new Date(mantenimiento.fechaEntrega).toLocaleString('es-ES') %></p>
+                                    <img src="<%= mantenimiento.firmaEntrega %>" class="img-fluid border" style="max-height: 150px;">
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Botones de Acción -->
+                <% if (user && (user.rol === 'administrador' || user.rol === 'moderador')) { %>
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <% if (!mantenimiento.firmaAdmision) { %>
+                            <a href="/mantenimientos/<%= mantenimiento._id %>/admision" class="btn btn-primary">
+                                <i class="fas fa-clipboard-check me-2"></i>Registrar Admisión
+                            </a>
+                        <% } else if (!mantenimiento.firmaEntrega) { %>
+                            <a href="/mantenimientos/<%= mantenimiento._id %>/entrega" class="btn btn-success">
+                                <i class="fas fa-handshake me-2"></i>Registrar Entrega
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="/mantenimientos" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Volver a la Lista

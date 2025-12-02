@@ -71,7 +71,7 @@
                                                                         <% }) %>
                                                                     </select>
                                                                 <% } %>
-                                                                <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Nombre o código del modelo" required value="<%= query && query.modelo ? query.modelo : '' %>">
+                                                                <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Ej: Dell OptiPlex 7090, HP EliteBook 840" required value="<%= query && query.modelo ? query.modelo : '' %>">
                                                         </div>
                                                 </div>
                     </div>
@@ -117,17 +117,17 @@
 
                     <div class="mb-3">
                         <label for="tecnico" class="form-label">Técnico Responsable</label>
-                        <input type="text" class="form-control" id="tecnico" name="tecnico" required>
+                        <input type="text" class="form-control" id="tecnico" name="tecnico" placeholder="Ej: Juan Pérez, María González" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="razon" class="form-label">Razón del Mantenimiento</label>
-                        <textarea class="form-control" id="razon" name="razon" rows="3" required></textarea>
+                        <textarea class="form-control" id="razon" name="razon" rows="3" placeholder="Ej: Limpieza general, actualización de software, reparación de componente" required></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label for="observaciones" class="form-label">Observaciones (Opcional)</label>
-                        <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="2" placeholder="Comentarios adicionales, problemas encontrados, recomendaciones..."></textarea>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

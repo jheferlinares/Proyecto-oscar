@@ -53,12 +53,14 @@
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre Completo</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre" 
-                                       value="<%= typeof nombre !== 'undefined' ? nombre : '' %>" required>
+                                       value="<%= typeof nombre !== 'undefined' ? nombre : '' %>" 
+                                       placeholder="Ej: Juan Carlos Pérez" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" 
-                                       value="<%= typeof email !== 'undefined' ? email : '' %>" required>
+                                       value="<%= typeof email !== 'undefined' ? email : '' %>" 
+                                       placeholder="usuario@empresa.com" required>
                             </div>
                             <div class="mb-3">
                                 <label for="posicion" class="form-label">Posición en la Empresa</label>
@@ -69,16 +71,23 @@
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="Mínimo 8 caracteres" required>
                                     <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                         <i class="fas fa-eye" id="eyeIcon"></i>
                                     </button>
+                                </div>
+                                <div class="form-text">
+                                    <small>
+                                        <strong>Requisitos:</strong> Mínimo 8 caracteres, mayúscula, minúscula, número y carácter especial (!@#$%^&*)
+                                    </small>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="password2" class="form-label">Confirmar Contraseña</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password2" name="password2" required>
+                                    <input type="password" class="form-control" id="password2" name="password2" 
+                                           placeholder="Repite tu contraseña" required>
                                     <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
                                         <i class="fas fa-eye" id="eyeIcon2"></i>
                                     </button>

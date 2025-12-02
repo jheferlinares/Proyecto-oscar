@@ -40,6 +40,31 @@ const MantenimientoSchema = new mongoose.Schema({
   observaciones: {
     type: String
   },
+  // Fase 1: Admisión
+  firmaAdmision: {
+    type: String // Base64 de la imagen de firma
+  },
+  fechaAdmision: {
+    type: Date
+  },
+  nombreClienteAdmision: {
+    type: String
+  },
+  // Fase 2: Entrega
+  firmaEntrega: {
+    type: String // Base64 de la imagen de firma
+  },
+  fechaEntrega: {
+    type: Date
+  },
+  nombreClienteEntrega: {
+    type: String
+  },
+  estadoServicio: {
+    type: String,
+    enum: ['pendiente', 'en_proceso', 'completado', 'entregado'],
+    default: 'pendiente'
+  },
   creadoPor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
