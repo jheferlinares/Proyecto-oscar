@@ -1,3 +1,9 @@
+/* Reset universal */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -155,6 +161,27 @@ body {
 .auth-body {
     background: linear-gradient(135deg, #c4e5fb 0%, #ffffff 100%);
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Eliminar márgenes por defecto del navegador */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+}
+
+/* Reset completo para páginas de autenticación */
+.auth-body * {
+    box-sizing: border-box;
+}
+
+.auth-body {
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+    overflow-x: hidden;
 }
 
 /* Estilos para el toggle de contraseña */
