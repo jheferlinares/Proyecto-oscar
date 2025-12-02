@@ -1,10 +1,4 @@
 const nodemailer = require('nodemailer');
-const sgMail = require('@sendgrid/mail');
-
-// Configurar SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
 
 // Crear transporter con fallback a Ethereal para testing
 const createTransporter = async () => {
@@ -78,14 +72,24 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     `
   };
 
-  // Usar SendGrid en producción
-  if (process.env.SENDGRID_API_KEY) {
+  // Usar SMTP2GO en producción (funciona en Render)
+  if (process.env.SMTP2GO_API_KEY) {
     try {
-      await sgMail.send(emailContent);
-      console.log('✅ Email enviado exitosamente vía SendGrid a:', email);
-      return { messageId: 'sendgrid-sent' };
+      const transporter = nodemailer.createTransport({
+        host: 'mail.smtp2go.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.SMTP2GO_USERNAME || 'eansa-sistema',
+          pass: process.env.SMTP2GO_API_KEY
+        }
+      });
+      
+      await transporter.sendMail(emailContent);
+      console.log('✅ Email enviado exitosamente vía SMTP2GO a:', email);
+      return { messageId: 'smtp2go-sent' };
     } catch (error) {
-      console.error('❌ Error con SendGrid:', error.message);
+      console.error('❌ Error con SMTP2GO:', error.message);
       throw error;
     }
   }
