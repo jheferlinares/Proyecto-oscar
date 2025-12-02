@@ -1,9 +1,17 @@
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+
+// Configurar SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Crear transporter con fallback a Ethereal para testing
 const createTransporter = async () => {
-  // Intentar Gmail primero
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.EMAIL_PASS !== 'tu-contraseña-de-aplicacion-gmail') {
+  // En producción (Render), usar solo Ethereal debido a restricciones de red
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER;
+  
+  if (!isProduction && process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.EMAIL_PASS !== 'tu-contraseña-de-aplicacion-gmail') {
     try {
       const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -21,11 +29,11 @@ const createTransporter = async () => {
       return { transporter, isGmail: true };
     } catch (error) {
       console.log('⚠️ Error con Gmail:', error.message);
-      console.log('🔄 Usando Ethereal como fallback...');
     }
   }
   
-  // Fallback: Ethereal para testing
+  // Usar Ethereal (en producción o como fallback)
+  console.log('📧 Usando Ethereal para emails (modo producción)');
   const testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -41,10 +49,9 @@ const createTransporter = async () => {
 };
 
 const sendPasswordResetEmail = async (email, resetToken) => {
-  const { transporter, isGmail } = await createTransporter();
   const resetUrl = `${process.env.BASE_URL || 'https://proyecto-oscar.onrender.com'}/auth/reset-password/${resetToken}`;
   
-  const mailOptions = {
+  const emailContent = {
     from: process.env.EMAIL_FROM || 'EANSA Sistema <noreply@eansa.com>',
     to: email,
     subject: 'Recuperación de Contraseña - EANSA',
@@ -71,13 +78,28 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     `
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  // Usar SendGrid en producción
+  if (process.env.SENDGRID_API_KEY) {
+    try {
+      await sgMail.send(emailContent);
+      console.log('✅ Email enviado exitosamente vía SendGrid a:', email);
+      return { messageId: 'sendgrid-sent' };
+    } catch (error) {
+      console.error('❌ Error con SendGrid:', error.message);
+      throw error;
+    }
+  }
+
+  // Fallback: usar el sistema anterior (Gmail local / Ethereal)
+  const { transporter, isGmail } = await createTransporter();
+  const info = await transporter.sendMail(emailContent);
   
   if (isGmail) {
     console.log('📧 Email enviado exitosamente a través de Gmail a:', email);
   } else {
-    // Si es Ethereal, mostrar URL de preview
-    console.log('📧 Email de prueba enviado! Ver en:', nodemailer.getTestMessageUrl(info));
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    console.log('📧 Email enviado a Ethereal. Preview:', previewUrl);
+    console.log('🔗 Token de recuperación generado para:', email);
   }
   
   return info;
