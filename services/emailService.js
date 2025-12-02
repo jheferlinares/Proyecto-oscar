@@ -1,4 +1,7 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Crear transporter con fallback a Ethereal para testing
 const createTransporter = async () => {
@@ -72,24 +75,20 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     `
   };
 
-  // Usar SMTP2GO en producción (funciona en Render)
-  if (process.env.SMTP2GO_API_KEY) {
+  // Usar Resend en producción (funciona en Render)
+  if (process.env.RESEND_API_KEY) {
     try {
-      const transporter = nodemailer.createTransport({
-        host: 'mail.smtp2go.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.SMTP2GO_USERNAME || 'eansa-sistema',
-          pass: process.env.SMTP2GO_API_KEY
-        }
+      const { data } = await resend.emails.send({
+        from: 'EANSA Sistema <onboarding@resend.dev>',
+        to: [email],
+        subject: emailContent.subject,
+        html: emailContent.html
       });
       
-      await transporter.sendMail(emailContent);
-      console.log('✅ Email enviado exitosamente vía SMTP2GO a:', email);
-      return { messageId: 'smtp2go-sent' };
+      console.log('✅ Email enviado exitosamente vía Resend a:', email);
+      return { messageId: data.id };
     } catch (error) {
-      console.error('❌ Error con SMTP2GO:', error.message);
+      console.error('❌ Error con Resend:', error.message);
       throw error;
     }
   }
