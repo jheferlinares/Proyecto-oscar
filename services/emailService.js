@@ -1,7 +1,14 @@
 const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
+const twilio = require('twilio');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Configurar Twilio
+let twilioClient;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+}
 
 // Crear transporter con fallback a Ethereal para testing
 const createTransporter = async () => {
@@ -75,7 +82,28 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     `
   };
 
-  // Usar Resend en producción (funciona en Render)
+  // Usar Twilio SendGrid en producción
+  if (twilioClient) {
+    try {
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.TWILIO_AUTH_TOKEN);
+      
+      await sgMail.send({
+        to: email,
+        from: 'EANSA Sistema <noreply@eansa.com>',
+        subject: emailContent.subject,
+        html: emailContent.html
+      });
+      
+      console.log('✅ Email enviado exitosamente vía Twilio SendGrid a:', email);
+      return { messageId: 'twilio-sendgrid-sent' };
+    } catch (error) {
+      console.error('❌ Error con Twilio SendGrid:', error.message);
+      // Continuar con fallback
+    }
+  }
+
+  // Usar Resend como fallback
   if (process.env.RESEND_API_KEY) {
     try {
       const { data } = await resend.emails.send({
@@ -89,7 +117,6 @@ const sendPasswordResetEmail = async (email, resetToken) => {
       return { messageId: data.id };
     } catch (error) {
       console.error('❌ Error con Resend:', error.message);
-      throw error;
     }
   }
 
