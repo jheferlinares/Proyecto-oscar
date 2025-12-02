@@ -114,8 +114,9 @@ router.post('/forgot-password', async (req, res) => {
     try {
       console.log('🔄 Intentando enviar email a:', email);
       console.log('📧 Configuración actual:');
-      console.log('- SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? 'Configurado' : 'No configurado');
+      console.log('- SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? `Configurado (${process.env.SENDGRID_API_KEY.substring(0, 10)}...)` : 'No configurado');
       console.log('- EMAIL_FROM:', process.env.EMAIL_FROM);
+      console.log('- BASE_URL:', process.env.BASE_URL);
       
       await sendPasswordResetEmail(email, resetToken);
       res.render('auth/forgot-password', { 
@@ -123,6 +124,7 @@ router.post('/forgot-password', async (req, res) => {
       });
     } catch (emailError) {
       console.error('❌ Error completo enviando email:', emailError);
+      console.error('❌ Stack trace:', emailError.stack);
       console.log(`🔑 Token de recuperación para ${email}: ${resetToken}`);
       console.log(`🔗 URL manual: ${process.env.BASE_URL}/auth/reset-password/${resetToken}`);
       res.render('auth/forgot-password', { 

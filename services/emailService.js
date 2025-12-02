@@ -47,7 +47,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
   const resetUrl = `${process.env.BASE_URL || 'https://proyecto-oscar.onrender.com'}/auth/reset-password/${resetToken}`;
   
   const emailContent = {
-    from: process.env.EMAIL_FROM || 'EANSA Sistema <noreply@eansa.com>',
+    from: 'EANSA Sistema <test@example.com>',
     to: email,
     subject: 'Recuperación de Contraseña - EANSA',
     html: `
