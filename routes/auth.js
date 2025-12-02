@@ -112,16 +112,21 @@ router.post('/forgot-password', async (req, res) => {
     
     // Enviar email de recuperación
     try {
+      console.log('🔄 Intentando enviar email a:', email);
+      console.log('📧 Configuración actual:');
+      console.log('- SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? 'Configurado' : 'No configurado');
+      console.log('- EMAIL_FROM:', process.env.EMAIL_FROM);
+      
       await sendPasswordResetEmail(email, resetToken);
       res.render('auth/forgot-password', { 
         success: 'Se ha enviado un enlace de recuperación a tu email. Revisa tu bandeja de entrada.' 
       });
     } catch (emailError) {
-      console.error('Error enviando email:', emailError);
-      // Fallback: mostrar token en consola si falla el email
-      console.log(`Token de recuperación para ${email}: ${resetToken}`);
+      console.error('❌ Error completo enviando email:', emailError);
+      console.log(`🔑 Token de recuperación para ${email}: ${resetToken}`);
+      console.log(`🔗 URL manual: ${process.env.BASE_URL}/auth/reset-password/${resetToken}`);
       res.render('auth/forgot-password', { 
-        success: 'Se ha generado un enlace de recuperación (revisa la consola del servidor)' 
+        success: 'Se ha generado un enlace de recuperación. Revisa los logs del servidor para más detalles.' 
       });
     }
   } catch (error) {
