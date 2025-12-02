@@ -128,7 +128,7 @@ router.post('/forgot-password', async (req, res) => {
       console.log(`🔑 Token de recuperación para ${email}: ${resetToken}`);
       console.log(`🔗 URL manual: ${process.env.BASE_URL}/auth/reset-password/${resetToken}`);
       res.render('auth/forgot-password', { 
-        success: 'Se ha generado un enlace de recuperación. Revisa los logs del servidor para más detalles.' 
+        success: `Enlace de recuperación: ${process.env.BASE_URL}/auth/reset-password/${resetToken}` 
       });
     }
   } catch (error) {
