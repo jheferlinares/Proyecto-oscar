@@ -1,14 +1,5 @@
 const nodemailer = require('nodemailer');
-const { Resend } = require('resend');
-const twilio = require('twilio');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Configurar Twilio
-let twilioClient;
-if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-  twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-}
 
 // Crear transporter con fallback a Ethereal para testing
 const createTransporter = async () => {
@@ -82,43 +73,23 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     `
   };
 
-  // Usar Twilio SendGrid en producción
-  if (twilioClient) {
+  // Usar SendGrid como principal
+  if (process.env.SENDGRID_API_KEY) {
     try {
       const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(process.env.TWILIO_AUTH_TOKEN);
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       
-      await sgMail.send({
-        to: email,
-        from: 'EANSA Sistema <noreply@eansa.com>',
-        subject: emailContent.subject,
-        html: emailContent.html
-      });
+      await sgMail.send(emailContent);
       
-      console.log('✅ Email enviado exitosamente vía Twilio SendGrid a:', email);
-      return { messageId: 'twilio-sendgrid-sent' };
+      console.log('✅ Email enviado exitosamente vía SendGrid a:', email);
+      return { messageId: 'sendgrid-sent' };
     } catch (error) {
-      console.error('❌ Error con Twilio SendGrid:', error.message);
-      // Continuar con fallback
+      console.error('❌ Error con SendGrid:', error.message);
+      throw error;
     }
   }
 
-  // Usar Resend como fallback
-  if (process.env.RESEND_API_KEY) {
-    try {
-      const { data } = await resend.emails.send({
-        from: 'EANSA Sistema <onboarding@resend.dev>',
-        to: [email],
-        subject: emailContent.subject,
-        html: emailContent.html
-      });
-      
-      console.log('✅ Email enviado exitosamente vía Resend a:', email);
-      return { messageId: data.id };
-    } catch (error) {
-      console.error('❌ Error con Resend:', error.message);
-    }
-  }
+  throw new Error('SendGrid no configurado');
 
   // Fallback: usar el sistema anterior (Gmail local / Ethereal)
   const { transporter, isGmail } = await createTransporter();
